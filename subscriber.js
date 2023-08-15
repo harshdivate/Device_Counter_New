@@ -12,6 +12,27 @@ let counter=0;
 // Topic to subscribe to
 const topic = 'company_name';
 
+let cv;
+
+
+
+async function getCounterValue(deviceId) {
+  try {
+    const result = await db.query(`select quantity from device_c where deviceId='${deviceId}'`);
+    // console.log(result.rows[0].quantity);
+    const counterValue = parseInt(result.rows[0].quantity); // Assuming result is an object with a 'rows' property
+
+    return counterValue;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
+
+
+
+
 
 
 // Connect to the MQTT broker
@@ -35,25 +56,40 @@ client.on('connect', () => {
 });
 
 // Callback when a message is received
-client.on('message', (receivedTopic, message) => {
-//     const jsonData=message;
-//     const jsonObject=JSON.parse(jsonData);
-//     const deviceid=jsonObject.device_id;
-//     console.log("Device id is"+deviceid+"Type of device id is"+typeof(deviceid));
-//     //Function call to updat the database
-//     counter=counter+1;
-//     update_db(deviceid,counter)
-//   console.log(`Received message on topic ${receivedTopic}: ${message}`);
-    counter=counter+1;
-    console.log(message);
+client.on('message',async (receivedTopic, message) => {
+  try{
     const messageObj = JSON.parse(message);
-    console.log(messageObj);
     const deviceId = messageObj.device_id;
-    console.log(`Device Id is `+deviceId+"typeof deviceid is"+typeof(deviceId));
-    update_db(deviceId, counter);
-    console.log("Updated");
+    let counter=await getCounterValue(deviceId);
+    console.log(typeof(counter),counter);
+    counter=counter+1;
+    // console.log(`Got counter value as ${counter}`);
+    await update_db(deviceId, counter);
+    // console.log(`Updated the counter to ${counter}`);
+  }
+  catch(err){
+    console.log(err);
+  }
+   
    
 });
+
+
+// client.on('message', async (receivedTopic, message) => {
+//   const messageObj = JSON.parse(message);
+//   const deviceId = messageObj.device_id;
+  
+//   try {
+//       const counterValue = await getCounterValue(deviceId); // Await the Promise
+//       console.log(typeof counterValue, counterValue);
+//       const updatedCounter = counterValue + 1;
+//       await update_db(deviceId, updatedCounter); // Await the database update
+//       console.log(`Updated the counter to ${updatedCounter}`);
+//   } catch (error) {
+//       console.error("Error processing message:", error);
+//   }
+// });
+
 
 
 
@@ -66,7 +102,8 @@ client.on('message', (receivedTopic, message) => {
 
 async function update_db(deviceid, counter) {
     try {
-      const result = await db.query(`UPDATE device_c SET quantity=${counter} WHERE deviceId='${deviceid}'`);
+      let result = await db.query(`UPDATE device_c SET quantity=${counter} WHERE deviceId='${deviceid}'`);
+      // let result = await db.query('UPDATE device_c SET quantity=$1 WHERE deviceId=$2', [counter, deviceid]);
       
     } catch (error) {
       console.error("Error updating database:", error);

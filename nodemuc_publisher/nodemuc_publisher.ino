@@ -11,8 +11,8 @@ int device_id=144;
 int laststate=LOW;
 int currentstate;
 // Replace with your Wi-Fi credentials
-const char* ssid = "Sahils.iphone";
-const char* password = "1234567890";
+const char* ssid = "SK's iPhone";
+const char* password = "qwertyuiop";
 
 // MQTT broker settings
 const char* mqttServer = "173.212.249.30";
