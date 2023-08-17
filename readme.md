@@ -1,1 +1,1 @@
-#Device Counter
+#Machine counter

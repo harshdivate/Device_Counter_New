@@ -1,23 +1,17 @@
 const express=require("express");
-
+const {serverPort}= require('./config')
 const app=express()
-const db=require("./db");
+const db=require("./db/db");
 
 app.use(express.json())
-
-
-
-
 
 app.get("/api/devices",async (req,res)=>{
     try{
         const result=await db.query(`select * from  device_c`);
-        const rows=result.rows[0];
         res.status(200).json({
             "status":"success",
-            "data":rows
+            "data":result.rows
         })
-        console.log(rows);
     }
     catch(err){
         console.log(err);
@@ -25,9 +19,9 @@ app.get("/api/devices",async (req,res)=>{
     
 })
 
-const port=3000;
-console.log(port);
 
-app.listen(port,()=>{
-    console.log(`Server is up and running on port ${port}`);;
+
+
+app.listen(serverPort,()=>{
+    console.log(`Server is up and running on port ${serverPort}`);;
 });
