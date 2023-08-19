@@ -15,13 +15,15 @@ const client = mqtt.connect(brokerUrl, {
 
 // Function to generate a random delay between 0 and 1 seconds
 function getRandomDelay() {
-  return Math.random() * 3000; // Convert to milliseconds
+  return 5; // Convert to milliseconds
 }
-
+function generateRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 // Function to publish the message and schedule the next publication
 function publishMessage() {
   const message = {
-    device_id: 'machine2',
+    device_id: 'machine'+generateRandomNumber(1,5),
     message: 'Device Detected'
   };
   client.publish(topic, JSON.stringify(message));
