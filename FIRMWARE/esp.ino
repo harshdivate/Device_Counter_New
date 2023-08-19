@@ -3,26 +3,25 @@
 #include<ArduinoJson.h>
 
 
-//Define Touch Sensor 
+
 #define sensor_pin D1
 
 int device_id=144;
 
 int laststate=LOW;
 int currentstate;
-// Replace with your Wi-Fi credentials
-const char* ssid = "SK's iPhone";
-const char* password = "qwertyuiop";
+
+const char* ssid = "";
+const char* password = "";
 
 // MQTT broker settings
-const char* mqttServer = "173.212.249.30";
+const char* mqttServer = "40.121.71.22";
 const int mqttPort = 1883;  // MQTT broker port
 const char* mqttTopic = "company_name";
-const char* mqttClientId = "machine1"; // MQTT client ID //machine_one
+const char* mqttClientId = "machine"; // MQTT client ID //machine_one
 const char* mqttUsername = "smps"; // MQTT username
 const char* mqttPassword = "smps1234"; 
 
-// Create WiFi client and MQTT client instances
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
@@ -38,7 +37,7 @@ void setup() {
 
   Serial.println("Connected to WiFi");
 
-  // Configure MQTT broker and callback function
+  
   mqttClient.setServer(mqttServer, mqttPort);
 
 }
@@ -47,25 +46,18 @@ void loop() {
   if (!mqttClient.connected()) {
     reconnect();
   }
-  
-  // Publish a message to the MQTT topic
-    DynamicJsonDocument jsonDocument(128); // Adjust the size as needed
+  DynamicJsonDocument jsonDocument(128); 
   jsonDocument["device_id"] = mqttClientId;
   jsonDocument["message"] = "Device Detected";
 
   String jsonString;
   serializeJson(jsonDocument, jsonString);
-  // String message = "Device Detected";
   int currentstate=digitalRead(sensor_pin);
   if(laststate==LOW && currentstate==HIGH){
       Serial.print("Publishing");
       mqttClient.publish(mqttTopic, jsonString.c_str());
       Serial.println("Published");
   }
-
-
-  // Publish every 5 seconds
-  delay(5000);
 }
 
 void reconnect() {
