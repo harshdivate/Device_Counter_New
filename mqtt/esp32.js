@@ -15,7 +15,7 @@ const client = mqtt.connect(brokerUrl, {
 
 // Function to generate a random delay between 0 and 1 seconds
 function getRandomDelay() {
-  return 5; // Convert to milliseconds
+  return 100; // Convert to milliseconds
 }
 function generateRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
